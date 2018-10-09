@@ -1,0 +1,6 @@
+﻿  client.cpp
+  date.cpp
+  time.cpp
+c:\users\dpate\desktop\code\csc245\lab3\date\time.cpp(178): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+  Generating Code...
+  Date.vcxproj -> C:\Users\dpate\Desktop\Code\CSC245\Lab3\Debug\Date.exe

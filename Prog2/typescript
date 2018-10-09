@@ -1,0 +1,293 @@
+Script started on Mon 08 Oct 2018 11:17:33 PM EDT
+]0;patel_db@cobra:~/csc245/Prog2[?1034h[patel_db@cobra Prog2]$ cat -n dc.cpp
+     1	#include <iostream>
+     2	#include "stack.h"
+     3	#include "dsexceptions.h"
+     4	#include <typeinfo>
+     5	#include <cstdlib>
+     6	
+     7	using namespace std;
+     8	
+     9	int main(){
+    10	  string input;
+    11	  Stack<int> s(10);
+    12	
+    13	  do
+    14	  {
+    15	    string temp;
+    16	    getline(cin, input);
+    17	    
+    18	    if(input.length() ==0)
+    19	      break;
+    20	    
+    21	    int i = 0;
+    22	    while(i <input.length())
+    23	    {
+    24	      //if statement handles numeric values in input
+    25	      //else statement handles all other values
+    26	      if(isdigit(input[i]) || input[i]=='_')
+    27	      {
+    28	        // do-while loop extracts positive and negative numbers
+    29		// of any length from input
+    30		do
+    31		{
+    32		  temp+=input[i];
+    33		  i++;
+    34		}
+    35		while(isdigit(input[i]));
+    36	
+    37		//change underscore to - for int conversion
+    38		temp[0] == '_' ? temp[0] = '-' :temp[0];
+    39		try
+    40		{
+    41		  s.push(atoi(temp.c_str()));
+    42		}
+    43		catch(Overflow e)
+    44		{
+    45		  cout << "Exception -- The Stack Is Full!" << endl;
+    46		}
+    47		temp = "";
+    48	      }//end of if starement to handle numbers
+    49	      else
+    50	      {
+    51		//switch statement executes statement
+    52		//based on character or operation entered
+    53		switch(input[i])
+    54		{
+    55		  case 'p':
+    56		    try
+    57		    {
+    58		      cout << s.top() <<endl;
+    59		    }
+    60		    catch(Underflow e)
+    61		    {
+    62		      cout << "Exception -- You Cannot Pop an Empty Stack!" << endl;
+    63		    }
+    64		    break; //end of p case
+    65	
+    66		  case 'n':
+    67		    try
+    68		    {
+    69		      cout << s.topAndPop() << " ";
+    70		    }
+    71		    //catch handles Underflow exception	    
+    72		    catch(Underflow e)
+    73		    {
+    74		      cout << "Exception -- You Cannot Pop an Empty Stack!" << endl;
+    75		    }	    
+    76		    break; //end of n case
+    77	
+    78		  case 'f':
+    79		  { 
+    80		    Stack<int> tempStack  = s;
+    81		    while(!tempStack.isEmpty())
+    82		      cout << tempStack.topAndPop() <<endl;
+    83	            break;
+    84		  } //end of f case
+    85	
+    86		  case 'c':
+    87		    s.makeEmpty();
+    88		    break; //end of c case
+    89	
+    90		  case 'd':
+    91		    try
+    92		    {
+    93		      s.push(s.top());
+    94		    }
+    95	            //catch handles Overflow exception
+    96		    catch(Overflow e)
+    97		    {
+    98		      cout <<"Expception -- The Stack Is Full!" << endl;
+    99		    }
+   100		    //catch handles Underflow exception	    
+   101		    catch(Underflow e)
+   102		    {
+   103		      cout << "Exception -- You Cannot Pop an Empty Stack!" << endl;
+   104		    }	    
+   105		    break; //End of d case
+   106	
+   107		  case 'r':
+   108		    try
+   109		    {
+   110		      int temp1 = s.topAndPop();
+   111		      int temp2 = s.topAndPop();
+   112		      s.push(temp1);
+   113		      s.push(temp2);
+   114		    }
+   115		    //catch handles Underflow exception	    
+   116		    catch(Underflow e)
+   117		    {
+   118		      cout << "Exception -- You Cannot Pop an Empty Stack!" << endl;
+   119		    }
+   120		    break; //end of r case
+   121		    
+   122		  case '+':
+   123		    try
+   124		    {
+   125		      s.push(s.topAndPop() + s.topAndPop());
+   126		    }
+   127		    //catch handles Underflow exception	    
+   128		    catch(Underflow e)
+   129		    {
+   130		      cout << "Exception -- You Cannot Pop an Empty Stack!" << endl;
+   131		    }	    
+   132		    break; //end of + case
+   133	
+   134		  case '-':
+   135		    try
+   136		    {
+   137		      int temp1 = s.topAndPop();
+   138		      int temp2 = s.topAndPop();
+   139		      s.push(temp2-temp1);
+   140		    } 
+   141	            //catch handles Underflow exception	    
+   142		    catch(Underflow e)
+   143		    {
+   144		      cout << "Exception -- You Cannot Pop an Empty Stack!" << endl;
+   145		    }
+   146		    break; //end of - case
+   147		    
+   148		  case '*':
+   149		    try
+   150		    {
+   151		      s.push(s.topAndPop() * s.topAndPop());
+   152		    }
+   153		    //catch handles Underflow exception	    
+   154		    catch(Underflow e)
+   155		    {
+   156		      cout << "Exception -- You Cannot Pop an Empty Stack!" << endl;
+   157		    }	    
+   158		    break; //end of * case
+   159			
+   160		  case '/':
+   161		    try
+   162		    {
+   163		      int temp1 = s.topAndPop();
+   164		      int temp2 = s.topAndPop();
+   165	  	      if(temp1 == 0)
+   166			throw DivisionByZero();
+   167		      s.push(temp2/temp1);
+   168		    }
+   169		    //catch handles Underflow exception	    
+   170		    catch(Underflow e)
+   171		    {
+   172		      cout << "Exception -- You Cannot Pop an Empty Stack!" << endl;
+   173		    }
+   174		    //catch handles DivisionByZero exception	    
+   175		    catch(DivisionByZero e)
+   176		    {
+   177		      cout << "Exception -- You Cannot Divide by 0!" << endl;
+   178		    }	
+   179		    break; //end of / case
+   180		    
+   181		  case '%':
+   182		  {
+   183		    try
+   184		    {
+   185		      int temp1 = s.topAndPop();
+   186		      int temp2 = s.topAndPop();
+   187		      if(temp1 == 0)
+   188			throw DivisionByZero();
+   189		      while(temp2>temp1)
+   190		        temp2-=temp1;
+   191		      s.push(temp2);
+   192		    }
+   193		    //catch handles Underflow exception	    
+   194		    catch(Underflow e)
+   195		    {
+   196		      cout << "Exception -- You Cannot Pop an Empty Stack!" << endl;
+   197		    }	    
+   198		    //catch handles DivisionByZero exception	    
+   199		    catch(DivisionByZero e)
+   200		    {
+   201		      cout << "Exception -- You Cannot Divide by 0!" << endl;
+   202		    }
+   203		    break; //end of % case
+   204		  }
+   205	
+   206		  //below case handles space in input if user enters any
+   207		  //does nothing if space is found
+   208		  //case is needed so default case does not run for spaces
+   209		  case ' ':
+   210		    break; //end of space case
+   211	
+   212		  default:
+   213		    cout << input[i] << " is not a valid operation. Please try again!" << endl; 
+   214		}//end of switch case 
+   215		i++;
+   216	      }//end of else statement
+   217	    }
+   218	  }
+   219	  //if cin reaches end of file
+   220	  //exit do-while and end program
+   221	  while (!cin.eof());
+   222	  return 0;
+   223	}
+   224		
+]0;patel_db@cobra:~/csc245/Prog2[patel_db@cobra Prog2]$ c++ dc.cpp
+]0;patel_db@cobra:~/csc245/Prog2[patel_db@cobra Prog2]$ a.out
+1 2 3 4 5 6 7 8 9 10
+11
+Exception -- The Stack Is Full!
+c
+-
+Exception -- You Cannot Pop an Empty Stack!
++
+Exception -- You Cannot Pop an Empty Stack!
+_3 2_3
+f
+-3
+-2
+2+p
+-1
++ 2 5
++p2
+4
+f
+2
+4
+-2
+2 0/
+Exception -- You Cannot Divide by 0!
+c
+f
+2 3 +
+p
+5
+6 - p
+-1
+4 6 *+p
+23
+2/p
+11
+4%p
+3
+2 100 _ +
+3 4 5 f
+5
+4
+3
+102
+3
+5d*p
+25
+rf2pc
+5
+25
+4
+3
+102
+3
+2
+f -
+Exception -- You Cannot Pop an Empty Stack!
+f
+exit
+e is not a valid operation. Please try again!
+x is not a valid operation. Please try again!
+i is not a valid operation. Please try again!
+t is not a valid operation. Please try again!
+]0;patel_db@cobra:~/csc245/Prog2[patel_db@cobra Prog2]$ exit
+exit
+
+Script done on Mon 08 Oct 2018 11:20:48 PM EDT

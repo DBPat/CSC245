@@ -1,0 +1,4 @@
+﻿  stl.cpp
+c:\users\dpate\desktop\code\csc245\lab3\stl\stl.cpp(59): warning C4018: '<': signed/unsigned mismatch
+c:\users\dpate\desktop\code\csc245\lab3\stl\stl.cpp(67): warning C4018: '<': signed/unsigned mismatch
+  stl.vcxproj -> C:\Users\dpate\Desktop\Code\CSC245\Lab3\stl\Debug\stl.exe

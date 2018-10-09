@@ -1,0 +1,242 @@
+Script started on Fri 21 Sep 2018 10:30:22 PM EDT
+]0;patel_db@cobra:~/csc245/Prog1[?1034h[patel_db@cobra Prog1]$ cat client/c[K[K.cpp
+#include <iostream>
+#include "linelist.h"
+#include <fstream>
+#include<string>
+#include <cstdlib>
+#include <cstdio>
+
+using namespace std;
+
+int main(int argc, char *argv[])
+{
+	if (argc == 1)
+		exit(1);
+	else if (argc == 2) {
+		//create LineList list, empty for now
+		LineList list;
+
+		// open file and build list based off strings in file
+		ifstream file(argv[1]);
+		string line;
+
+		// loop through file and insert every line into LineList list
+		while (file) {
+			getline(file, line);
+			list.insertLine(line);
+			if (file.eof()) break;
+		}
+
+
+		//go into while loop that will exit when users enters "E"
+		list.printList();
+		char input = 'h';
+		while (input != 'E')
+		{
+			cout << list.getCurrLineNum() << "> ";
+			cin >> input;
+
+			switch (input)
+			{
+				//if user enters I, prompt for string and insert into linelist
+			case 'I':
+				cout << (list.getCurrLineNum()) +1<< "> ";
+				cin.ignore();
+				getline(cin, line);
+				list.insertLine(line);
+				break;
+
+			case 'D':
+				list.deleteLine();
+				break;
+
+				//if user enters P, current line goes back 1
+			case 'P':
+				list.movePrevLine();
+				break;
+
+				//if user enters L, list all lines in file 
+			case 'L':
+				list.printList();
+				break;
+
+				//if user enters N, move to next line
+			case 'N':
+				list.moveNextLine();
+				break;
+			}
+		}
+
+		//Resets file to original 
+		ofstream myfile;
+		myfile.open(argv[1]);
+		list.goToTop();
+		for (int i = list.getCurrLineNum(); i <= list.getLength();i++) {
+			list.moveNextLine();
+			myfile << list.getCurrLine() << endl;
+		}
+
+		myfile.close();
+	}
+	
+}]0;patel_db@cobra:~/csc245/Prog1[patel_db@cobra Prog1]$ cat linelist.cpp
+#include <iostream>
+#include "linelist.h"
+using namespace std;
+
+LineList::LineList()
+{
+	LineNode *line = new LineNode;
+	LineNode *line2 = new LineNode;
+
+	line->info = topMessage;
+	currLine = line;
+	currLineNum = 0;
+	length = 0;
+	line2->info = bottomMessage;
+	currLine->back = NULL;
+	currLine->next = line2;
+	line2->back = line;
+	line2->next = NULL;
+}
+
+void LineList::goToTop()
+{
+	currLineNum = 1;
+	// Post : Advances currLine to line 1
+	while (currLine->back != NULL) {
+		currLine = currLine->back;
+	}
+}
+
+void LineList::goToBottom()
+{
+	// Post : Advances currLine to last line
+	currLineNum = length;
+	while (currLine->next != NULL)
+		currLine = currLine->next;
+}
+
+void LineList::insertLine(string newLine)
+{
+	// post : newLine has been inserted after the current line
+	LineNode *temp = new LineNode;
+	temp->info = newLine;
+	temp->back = currLine;
+	temp->next = currLine->next;
+
+	currLine->next->back = temp;
+	currLine->next = temp;
+	currLine = temp;
+
+	currLineNum++;
+	length++;;
+}
+
+void LineList::deleteLine()
+{
+	// post : deletes the current line leaving currentLine
+	//	  pointing to line following
+	if (currLine->info != bottomMessage && length >0) {
+		if (currLineNum >1) {
+			LineNode *temp = new LineNode;
+			temp = currLine;
+			currLine->next->back = temp->back;
+			currLine->back->next = temp->next;
+			currLine = temp->back;
+
+			currLineNum--;
+			length--;
+		}
+		else if (currLineNum ==1) {
+			
+			currLine = currLine->next;
+			LineNode *temp = new LineNode;
+			temp = currLine;
+			currLine->next->back = temp->back;
+			currLine->back->next = temp->next;
+			currLine = temp->back;
+
+			length == 1 ? currLineNum :  currLineNum--;
+			length--;
+		}
+	}
+
+}
+
+void LineList::printList()
+{
+	int tempLine = currLineNum;
+	LineNode *temp = new LineNode;
+	temp = currLine;
+	goToTop();
+	for (currLineNum; currLineNum <=length; currLineNum++)
+	{
+		cout << currLineNum << "> " << currLine->next->info << endl;
+		currLine = currLine->next;
+	}
+	currLine = temp;
+	currLineNum = tempLine;
+}
+
+string LineList::getCurrLine() const
+{
+	return currLine->info;
+}
+
+void LineList::moveNextLine()
+{
+	// Post : Advances currLine (unless already at last line)
+	if (currLine->next->info != bottomMessage && currLineNum !=length)
+	{
+		currLine = currLine->next;
+		currLineNum++;
+	}
+	
+}
+
+void LineList::movePrevLine()
+{
+	// Post : Advances currLine (unless already at last line)
+	if (currLine->back->info != topMessage && currLineNum >0 && length >0)
+	{
+		currLine = currLine->back;
+		currLineNum--;
+	}
+}
+
+int LineList::getCurrLineNum() const
+{
+	return currLineNum;
+}
+
+int LineList::getLength() const
+{
+	return length;
+}]0;patel_db@cobra:~/csc245/Prog1[patel_db@cobra Prog1]$ c++ client.cpp linelist.o
+]0;patel_db@cobra:~/csc245/Prog1[patel_db@cobra Prog1]$ ls
+[0m[01;32ma.out[0m  client.cpp  linelist.cpp  linelist.h  linelist.o  testfile  typescript
+[m]0;patel_db@cobra:~/csc245/Prog1[patel_db@cobra Prog1]$ a.out tetsf[K[K[Kstfile
+1> This is my first line.
+2> This is my second line.
+3> This is my third line.
+3> P
+2> I
+3> A brand new line is inserted!
+3> L
+1> This is my first line.
+2> This is my second line.
+3> A brand new line is inserted!
+4> This is my third line.
+3> N
+4> D
+3> D
+2> L
+1> This is my first line.
+2> This is my second line.
+2> E
+]0;patel_db@cobra:~/csc245/Prog1[patel_db@cobra Prog1]$ exit
+exit
+
+Script done on Fri 21 Sep 2018 10:32:10 PM EDT
